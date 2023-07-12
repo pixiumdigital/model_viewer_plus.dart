@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
-  String css = '''
+String css = '''
 model-viewer#reveal {
   --poster-color: transparent;
 }
 ''';
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(title: Text("Model Viewer")),
+          appBar: AppBar(title: const Text("Model Viewer")),
           body: ModelViewer(
             id: "revea",
             loading: Loading.eager,

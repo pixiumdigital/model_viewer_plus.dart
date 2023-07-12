@@ -1,7 +1,6 @@
 /* This is free and unencumbered software released into the public domain. */
 
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:model_viewer_plus/model_viewer_plus.dart'; // ignore_for_file: unused_import
 
 void main() {

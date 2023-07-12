@@ -1,5 +1,7 @@
 /* This is free and unencumbered software released into the public domain. */
 
+// ignore_for_file: depend_on_referenced_packages, unawaited_futures
+import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:io'
     show File, HttpRequest, HttpServer, HttpStatus, InternetAddress, Platform;
@@ -9,6 +11,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:model_viewer_plus/src/html_builder.dart';
+import 'package:model_viewer_plus/src/model_viewer_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,9 +20,6 @@ import 'package:webview_flutter_android/webview_flutter_android.dart'
     as android;
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart'
     as ios;
-
-import 'html_builder.dart';
-import 'model_viewer_plus.dart';
 
 class ModelViewerState extends State<ModelViewer> {
   WebViewController? _controller;
@@ -29,29 +30,23 @@ class ModelViewerState extends State<ModelViewer> {
   @override
   void initState() {
     super.initState();
-    _initProxy().then((value) => _initController());
+    unawaited(_initProxy().then((value) => _initController()));
   }
 
   @override
   void dispose() {
-    super.dispose();
     if (_proxy != null) {
-      _proxy!.close(force: true);
+      unawaited(_proxy!.close(force: true));
       _proxy = null;
     }
-  }
-
-  @override
-  void didUpdateWidget(final ModelViewer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // TODO
+    super.dispose();
   }
 
   @override
   Widget build(final BuildContext context) {
     final webViewController = _controller;
     if (_proxy == null || webViewController == null) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(
           semanticsLabel: 'Loading Model Viewer...',
         ),
@@ -59,9 +54,9 @@ class ModelViewerState extends State<ModelViewer> {
     } else {
       return WebViewWidget(
         controller: webViewController,
-        gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+        gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{
           Factory<OneSequenceGestureRecognizer>(
-            () => EagerGestureRecognizer(),
+            EagerGestureRecognizer.new,
           ),
         },
       );
@@ -147,59 +142,56 @@ class ModelViewerState extends State<ModelViewer> {
     } else {
       params = const PlatformWebViewControllerCreationParams();
     }
-    final webViewController =
-        WebViewController.fromPlatformCreationParams(params);
-
-    webViewController
+    final webViewController = WebViewController.fromPlatformCreationParams(
+      params,
+    )
       ..setBackgroundColor(Colors.transparent)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onNavigationRequest: (NavigationRequest request) async {
-          debugPrint(
-              '>>>> ModelViewer wants to load: <${request.url}>'); // DEBUG
-          if (!Platform.isAndroid) {
-            if (Platform.isIOS && request.url == widget.iosSrc) {
-              // TODO: Migrate to launchUrl()
-              await launch(
-                request.url,
-                forceSafariVC: true,
-              );
-              return NavigationDecision.prevent;
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (request) async {
+            debugPrint(
+              '>>>> ModelViewer wants to load: <${request.url}>',
+            ); // DEBUG
+            if (!Platform.isAndroid) {
+              if (Platform.isIOS && request.url == widget.iosSrc) {
+                await launchUrl(Uri.parse(request.url.trimLeft()));
+                return NavigationDecision.prevent;
+              }
+              return NavigationDecision.navigate;
             }
-            return NavigationDecision.navigate;
-          }
-          if (!request.url.startsWith("intent://")) {
-            return NavigationDecision.navigate;
-          }
-          try {
-            // Original, just keep as a backup
-            // See: https://developers.google.com/ar/develop/java/scene-viewer
-            // final intent = android_content.AndroidIntent(
-            //   action: "android.intent.action.VIEW", // Intent.ACTION_VIEW
-            //   data: "https://arvr.google.com/scene-viewer/1.0",
-            //   arguments: <String, dynamic>{
-            //     'file': widget.src,
-            //     'mode': 'ar_preferred',
-            //   },
-            //   package: "com.google.ar.core",
-            //   flags: <int>[
-            //     Flag.FLAG_ACTIVITY_NEW_TASK
-            //   ], // Intent.FLAG_ACTIVITY_NEW_TASK,
-            // );
+            if (!request.url.startsWith('intent://')) {
+              return NavigationDecision.navigate;
+            }
+            try {
+              // Original, just keep as a backup
+              // See: https://developers.google.com/ar/develop/java/scene-viewer
+              // final intent = android_content.AndroidIntent(
+              //   action: "android.intent.action.VIEW", // Intent.ACTION_VIEW
+              //   data: "https://arvr.google.com/scene-viewer/1.0",
+              //   arguments: <String, dynamic>{
+              //     'file': widget.src,
+              //     'mode': 'ar_preferred',
+              //   },
+              //   package: "com.google.ar.core",
+              //   flags: <int>[
+              //     Flag.FLAG_ACTIVITY_NEW_TASK
+              //   ], // Intent.FLAG_ACTIVITY_NEW_TASK,
+              // );
 
-            // 2022-03-14 update
-            final String fileURL;
-            if (['http', 'https'].contains(Uri.parse(widget.src).scheme)) {
-              fileURL = widget.src;
-            } else {
-              fileURL = p.joinAll([_proxyURL, 'model']);
-            }
-            final intent = android_content.AndroidIntent(
-              action: "android.intent.action.VIEW",
-              // Intent.ACTION_VIEW
-              // See https://developers.google.com/ar/develop/scene-viewer#3d-or-ar
-              // data should be something like "https://arvr.google.com/scene-viewer/1.0?file=https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf"
-              data: Uri(
+              // 2022-03-14 update
+              final String fileURL;
+              if (['http', 'https'].contains(Uri.parse(widget.src).scheme)) {
+                fileURL = widget.src;
+              } else {
+                fileURL = p.joinAll([_proxyURL, 'model']);
+              }
+              final intent = android_content.AndroidIntent(
+                action: 'android.intent.action.VIEW',
+                // Intent.ACTION_VIEW
+                // See https://developers.google.com/ar/develop/scene-viewer#3d-or-ar
+                // data should be something like "https://arvr.google.com/scene-viewer/1.0?file=https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf"
+                data: Uri(
                   scheme: 'https',
                   host: 'arvr.google.com',
                   path: '/scene-viewer/1.0',
@@ -208,24 +200,28 @@ class ModelViewerState extends State<ModelViewer> {
                     // TODO: further test, and make it 'ar_preferred'
                     'mode': 'ar_preferred',
                     'file': fileURL,
-                  }).toString(),
-              // package changed to com.google.android.googlequicksearchbox
-              // to support the widest possible range of devices
-              package: "com.google.android.googlequicksearchbox",
-              arguments: <String, dynamic>{
-                'browser_fallback_url':
-                    'market://details?id=com.google.android.googlequicksearchbox'
-              },
-            );
-            await intent.launch().onError((error, stackTrace) {
-              debugPrint('>>>> ModelViewer Intent Error: $error'); // DEBUG
-            });
-          } catch (error) {
-            debugPrint('>>>> ModelViewer failed to launch AR: $error'); // DEBUG
-          }
-          return NavigationDecision.prevent;
-        },
-      ));
+                  },
+                ).toString(),
+                // package changed to com.google.android.googlequicksearchbox
+                // to support the widest possible range of devices
+                package: 'com.google.android.googlequicksearchbox',
+                arguments: <String, dynamic>{
+                  'browser_fallback_url':
+                      'market://details?id=com.google.android.googlequicksearchbox'
+                },
+              );
+              await intent.launch().onError((error, stackTrace) {
+                debugPrint('>>>> ModelViewer Intent Error: $error'); // DEBUG
+              });
+            } on Object catch (error) {
+              debugPrint(
+                '>>>> ModelViewer failed to launch AR: $error',
+              ); // DEBUG
+            }
+            return NavigationDecision.prevent;
+          },
+        ),
+      );
     widget.javascriptChannels?.forEach((element) {
       webViewController.addJavaScriptChannel(
         element.name,
@@ -247,10 +243,9 @@ class ModelViewerState extends State<ModelViewer> {
     _proxy = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
 
     setState(() {
-      _proxy;
       final host = _proxy!.address.address;
       final port = _proxy!.port;
-      _proxyURL = "http://$host:$port/";
+      _proxyURL = 'http://$host:$port/';
     });
 
     _proxy!.listen((final HttpRequest request) async {
@@ -266,37 +261,38 @@ class ModelViewerState extends State<ModelViewer> {
           final html = utf8.encode(_buildHTML(htmlTemplate));
           response
             ..statusCode = HttpStatus.ok
-            ..headers.add("Content-Type", "text/html;charset=UTF-8")
-            ..headers.add("Content-Length", html.length.toString())
+            ..headers.add('Content-Type', 'text/html;charset=UTF-8')
+            ..headers.add('Content-Length', html.length.toString())
             ..add(html);
           await response.close();
           break;
 
         case '/model-viewer.min.js':
           final code = await _readAsset(
-              'packages/model_viewer_plus/assets/model-viewer.min.js');
+            'packages/model_viewer_plus/assets/model-viewer.min.js',
+          );
           response
             ..statusCode = HttpStatus.ok
             ..headers
-                .add("Content-Type", "application/javascript;charset=UTF-8")
-            ..headers.add("Content-Length", code.lengthInBytes.toString())
+                .add('Content-Type', 'application/javascript;charset=UTF-8')
+            ..headers.add('Content-Length', code.lengthInBytes.toString())
             ..add(code);
           await response.close();
           break;
 
         case '/model':
-          if (url.isAbsolute && !url.isScheme("file")) {
+          if (url.isAbsolute && !url.isScheme('file')) {
             // debugPrint(url.toString());
             await response.redirect(url); // TODO: proxy the resource
           } else {
-            final data = await (url.isScheme("file")
+            final data = await (url.isScheme('file')
                 ? _readFile(url.path)
                 : _readAsset(url.path));
             response
               ..statusCode = HttpStatus.ok
-              ..headers.add("Content-Type", "application/octet-stream")
-              ..headers.add("Content-Length", data.lengthInBytes.toString())
-              ..headers.add("Access-Control-Allow-Origin", "*")
+              ..headers.add('Content-Type', 'application/octet-stream')
+              ..headers.add('Content-Length', data.lengthInBytes.toString())
+              ..headers.add('Access-Control-Allow-Origin', '*')
               ..add(data);
             await response.close();
           }
@@ -306,34 +302,33 @@ class ModelViewerState extends State<ModelViewer> {
           final text = utf8.encode("Resource '${request.uri}' not found");
           response
             ..statusCode = HttpStatus.notFound
-            ..headers.add("Content-Type", "text/plain;charset=UTF-8")
-            ..headers.add("Content-Length", text.length.toString())
+            ..headers.add('Content-Type', 'text/plain;charset=UTF-8')
+            ..headers.add('Content-Length', text.length.toString())
             ..add(text);
           await response.close();
           break;
 
         default:
           if (request.uri.isAbsolute) {
-            debugPrint("Redirect: ${request.uri}");
+            debugPrint('Redirect: ${request.uri}');
             await response.redirect(request.uri);
           } else if (request.uri.hasAbsolutePath) {
             // Some gltf models need other resources from the origin
-            var pathSegments = [...url.pathSegments];
-            pathSegments.removeLast();
-            var tryDestination = p.joinAll([
+            final pathSegments = [...url.pathSegments]..removeLast();
+            final tryDestination = p.joinAll([
               url.origin,
               ...pathSegments,
               request.uri.path.replaceFirst('/', '')
             ]);
-            debugPrint("Try: $tryDestination");
+            debugPrint('Try: $tryDestination');
             await response.redirect(Uri.parse(tryDestination));
           } else {
             debugPrint('404 with ${request.uri}');
             final text = utf8.encode("Resource '${request.uri}' not found");
             response
               ..statusCode = HttpStatus.notFound
-              ..headers.add("Content-Type", "text/plain;charset=UTF-8")
-              ..headers.add("Content-Length", text.length.toString())
+              ..headers.add('Content-Type', 'text/plain;charset=UTF-8')
+              ..headers.add('Content-Length', text.length.toString())
               ..add(text);
             await response.close();
             break;
@@ -348,6 +343,6 @@ class ModelViewerState extends State<ModelViewer> {
   }
 
   Future<Uint8List> _readFile(final String path) async {
-    return await File(path).readAsBytes();
+    return File(path).readAsBytes();
   }
 }

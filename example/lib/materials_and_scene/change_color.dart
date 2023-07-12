@@ -1,11 +1,11 @@
+// ignore_for_file: implementation_imports
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
-
 import 'package:model_viewer_plus/src/model_viewer_plus_web.dart';
 import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
     if (dart.library.html) 'dart:html';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 String js = r'''
 const modelViewerColor = document.querySelector("model-viewer#color");
@@ -31,11 +31,13 @@ NodeValidatorBuilder myNodeValidatorBuilder = defaultNodeValidatorBuilder
       attributes: ['data-color'], uriPolicy: AllowAllUri());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text("Model Viewer")),
+        appBar: AppBar(title: const Text("Model Viewer")),
         body: ModelViewer(
           id: "color",
           src: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',

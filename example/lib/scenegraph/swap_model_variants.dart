@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 String js = r'''
 const modelViewerVariants = document.querySelector("model-viewer#shoe");
@@ -34,18 +34,20 @@ String html = r'''
 ''';
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text("Model Viewer")),
+        appBar: AppBar(title: const Text("Model Viewer")),
         body: ModelViewer(
           id: "shoe",
           src:
               'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
           alt: "A 3D model of a Shoe",
           ar: true,
-          arModes: ['scene-viewer', 'webxr', 'quick-look'],
+          arModes: const ['scene-viewer', 'webxr', 'quick-look'],
           cameraControls: true,
           relatedJs: js,
           innerModelViewerHtml: html,

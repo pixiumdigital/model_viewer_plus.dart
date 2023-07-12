@@ -3,16 +3,16 @@
 import 'dart:convert' show htmlEscape;
 
 import 'package:flutter/material.dart';
-import '../model_viewer_plus.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 abstract class HTMLBuilder {
   HTMLBuilder._();
 
   static String build({
-    String htmlTemplate = '',
     // Attributes
     // Loading Attributes
     required final String src,
+    String htmlTemplate = '',
     final String? alt,
     final String? poster,
     final Loading? loading,
@@ -79,14 +79,12 @@ abstract class HTMLBuilder {
       htmlTemplate = htmlTemplate.replaceFirst('/* other-css */', relatedCss);
     }
 
-    final modelViewerHtml = StringBuffer('');
-
-    modelViewerHtml.write('<model-viewer');
-
-    // Attributes
-    // Loading Attributes
-    // src
-    modelViewerHtml.write(' src="${htmlEscape.convert(src)}"');
+    final modelViewerHtml = StringBuffer()
+      ..write('<model-viewer')
+      // Attributes
+      // Loading Attributes
+      // src
+      ..write(' src="${htmlEscape.convert(src)}"');
     // alt
     if (alt != null) {
       modelViewerHtml.write(' alt="${htmlEscape.convert(alt)}"');
@@ -215,7 +213,8 @@ abstract class HTMLBuilder {
     // rotation-per-second
     if (rotationPerSecond != null) {
       modelViewerHtml.write(
-          ' rotation-per-second="${htmlEscape.convert(rotationPerSecond)}"');
+        ' rotation-per-second="${htmlEscape.convert(rotationPerSecond)}"',
+      );
     }
     // interaction-prompt
     if (interactionPrompt != null) {
@@ -302,7 +301,8 @@ abstract class HTMLBuilder {
     // environment-image
     if (environmentImage != null) {
       modelViewerHtml.write(
-          ' environment-image="${htmlEscape.convert(environmentImage)}"');
+        ' environment-image="${htmlEscape.convert(environmentImage)}"',
+      );
     }
     // exposure
     if (exposure != null) {
@@ -362,10 +362,12 @@ abstract class HTMLBuilder {
     }
 
     // Styles
-    modelViewerHtml.write(' style="');
-    // CSS Styles
-    modelViewerHtml.write(
-        'background-color: rgba(${backgroundColor.red}, ${backgroundColor.green}, ${backgroundColor.blue}, ${backgroundColor.alpha}); ');
+    modelViewerHtml
+      ..write(' style="')
+      // CSS Styles
+      ..write(
+        'background-color: rgba(${backgroundColor.red}, ${backgroundColor.green}, ${backgroundColor.blue}, ${backgroundColor.alpha}); ',
+      );
 
     // Annotations CSS
     // --min-hotspot-opacity
@@ -395,18 +397,19 @@ abstract class HTMLBuilder {
     modelViewerHtml.writeln('</model-viewer>');
 
     if (relatedJs != null) {
-      modelViewerHtml.writeln('<script>');
-      modelViewerHtml.write(relatedJs);
-      modelViewerHtml.writeln('</script>');
+      modelViewerHtml
+        ..writeln('<script>')
+        ..write(relatedJs)
+        ..writeln('</script>');
     }
 
-    if (debugLogging == true) {
-      debugPrint("HTML generated for model_viewer_plus:");
+    if (debugLogging ?? false) {
+      debugPrint('HTML generated for model_viewer_plus:');
     }
-    var html =
+    final html =
         htmlTemplate.replaceFirst('<!-- body -->', modelViewerHtml.toString());
 
-    if (debugLogging == true) {
+    if (debugLogging ?? false) {
       debugPrint(html); // DEBUG
     }
 
