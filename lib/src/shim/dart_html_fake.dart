@@ -1,10 +1,7 @@
-// fix: INFO: Avoid using web-only libraries outside Flutter web plugin
-// packages.
-
 class HtmlHtmlElement {
   dynamic get style => null;
 
-  dynamic setInnerHtml(String html, {NodeValidator? validator}) {}
+  void setInnerHtml(String html, {NodeValidator? validator}) {}
 }
 
 class NodeValidatorBuilder extends NodeValidator {
@@ -67,6 +64,7 @@ abstract class NodeValidator {
   bool allowsElement(Element element);
 }
 
+// ignore: one_member_abstracts
 abstract class UriPolicy {
   bool allowsUri(String uri);
 }

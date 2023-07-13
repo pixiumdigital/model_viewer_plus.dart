@@ -1,5 +1,16 @@
-name: CI
-on: push
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - review_requested
+
 jobs:
   test:
     name: Run tests
@@ -13,5 +24,9 @@ jobs:
           channel: 'stable'
       - name: Install dependencies
         run: flutter pub get
-      - name: Run the test suite
+      - name: Format
+        run: dart format --set-exit-if-changed -o none .
+      - name: Analyze
+        run: dart analyze
+      - name: Run tests
         run: flutter test

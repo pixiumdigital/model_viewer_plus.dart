@@ -1,15 +1,12 @@
-/* This is free and unencumbered software released into the public domain. */
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:model_viewer_plus/src/html_builder.dart';
-import 'package:model_viewer_plus/src/model_viewer_plus.dart';
-import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
-    if (dart.library.html) 'dart:html';
-import 'package:model_viewer_plus/src/shim/dart_ui_fake.dart'
-    if (dart.library.html) 'dart:ui' as ui;
+
+import 'html_builder.dart';
+import 'model_viewer_plus.dart';
+import 'shim/dart_html_fake.dart' if (dart.library.html) 'dart:html';
+import 'shim/dart_ui_fake.dart' if (dart.library.html) 'dart:ui' as ui;
 
 class ModelViewerState extends State<ModelViewer> {
   bool _isLoading = true;
@@ -35,8 +32,11 @@ class ModelViewerState extends State<ModelViewer> {
     ui.platformViewRegistry.registerViewFactory(
       'model-viewer-html-$_uniqueViewType',
       (viewId) => HtmlHtmlElement()
+        // ignore: avoid_dynamic_calls
         ..style.border = 'none'
+        // ignore: avoid_dynamic_calls
         ..style.height = '100%'
+        // ignore: avoid_dynamic_calls
         ..style.width = '100%'
         ..setInnerHtml(html, validator: validator),
     );

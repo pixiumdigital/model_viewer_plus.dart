@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:model_viewer_plus/src/model_viewer_plus_stub.dart'
+import 'package:webview_flutter/webview_flutter.dart';
+
+import 'model_viewer_plus_stub.dart'
     if (dart.library.io) 'model_viewer_plus_mobile.dart'
     if (dart.library.js) 'model_viewer_plus_web.dart';
-import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
-    if (dart.library.html) 'dart:html';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'shim/dart_html_fake.dart' if (dart.library.html) 'dart:html';
 
 enum Loading { auto, lazy, eager }
 
@@ -28,15 +28,14 @@ class JavascriptChannel {
   const JavascriptChannel(this.name, {required this.onMessageReceived});
 
   final String name;
-  final void Function(JavaScriptMessage) onMessageReceived;
+  final ValueChanged<JavaScriptMessage> onMessageReceived;
 }
 
 /// Flutter widget for rendering interactive 3D models.
 class ModelViewer extends StatefulWidget {
   const ModelViewer({
-    super.key,
-    this.backgroundColor = Colors.transparent,
     required this.src,
+    this.backgroundColor = Colors.transparent,
     this.alt,
     this.poster,
     this.loading,
@@ -91,6 +90,7 @@ class ModelViewer extends StatefulWidget {
     this.overwriteNodeValidatorBuilder,
     this.javascriptChannels,
     this.onWebViewCreated,
+    super.key,
   });
 
   // Loading Attributes
@@ -109,14 +109,14 @@ class ModelViewer extends StatefulWidget {
   /// - a relative pathname for Flutter app assets
   ///   (for example, `assets/MyModel.glb`)
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-src
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-src
   final String src;
 
   /// Configures the model with custom text that will be used to describe the
   /// model to viewers who use a screen reader or otherwise depend on additional
   /// semantic context to understand what they are viewing.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-alt
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-alt
   final String? alt;
 
   /// Displays an image instead of the model, useful for showing the user
@@ -124,7 +124,7 @@ class ModelViewer extends StatefulWidget {
   /// poster with transparency, you may also want to set --poster-color to
   /// transparent so that the background shows through.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-poster
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-poster
   final String? poster;
 
   /// An enumerable attribute describing under what conditions the model should
@@ -135,7 +135,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You may use the [Loading] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-loading
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-loading
   final Loading? loading;
 
   /// This attribute controls when the model should be revealed. It currently
@@ -148,7 +148,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You may use the [Reveal] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-reveal
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-reveal
   final Reveal? reveal;
 
   /// This attribute makes the browser include credentials (cookies,
@@ -158,14 +158,14 @@ class ModelViewer extends StatefulWidget {
   /// credentials. Note that this has no effect if you are loading files locally
   /// or from the same domain.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-withCredentials
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-loading-attributes-withCredentials
   final bool? withCredentials;
 
   // AR Attributes
 
   /// Enable the ability to launch AR experiences on supported devices.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-ar
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-ar
   final bool? ar;
 
   /// A prioritized list of the types of AR experiences to enable. Allowed values are
@@ -177,7 +177,7 @@ class ModelViewer extends StatefulWidget {
   /// specifying quick-look here allows us to generate a USDZ on the fly rather
   /// than downloading a separate ios-src file.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arModes
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arModes
   final List<String>? arModes;
 
   /// Controls the scaling behavior in AR mode.
@@ -186,7 +186,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You many use the [ArScale] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arScale
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arScale
   final ArScale? arScale;
 
   /// Selects whether to place the object on the floor (horizontal surface) or
@@ -197,7 +197,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You may use the [ArPlacement] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arPlacement
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-arPlacement
   final ArPlacement? arPlacement;
 
   /// The url to a [USDZ](https://graphics.pixar.com/usd/docs/Usdz-File-Format-Specification.html) model which will be used on [supported iOS 12+ devices](https://www.apple.com/ios/augmented-reality/)
@@ -210,7 +210,7 @@ class ModelViewer extends StatefulWidget {
   /// for instance animations are not yet supported, so in some cases supplying
   /// ios-src may give better results.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-iosSrc
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-attributes-iosSrc
   final String? iosSrc;
 
   /// Enables AR lighting estimation in WebXR mode; this has a performance cost
@@ -228,13 +228,13 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaults to true.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraControls
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraControls
   final bool? cameraControls;
 
   /// Disables panning interactions, which are enabled by default using
   /// two-finger touch, or dragging with right-click or modifier keys.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disablePan
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disablePan
   final bool? disablePan;
 
   /// Disables tap-to-recenter behavior (both center-the-tapped-point and
@@ -245,7 +245,7 @@ class ModelViewer extends StatefulWidget {
   /// rotating, it is effectively impossible for the user to exactly return to
   /// their starting view.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disableTap
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disableTap
   final bool? disableTap;
 
   /// Akin to the CSS touch-action property (which does not work due to some
@@ -258,14 +258,14 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You may set this attribute with the [TouchAction] enum.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-touch-action
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-touch-action
   final TouchAction? touchAction;
 
   /// Disables user zoom when [camera-controls] is enabled (has no effect
   /// otherwise). Has the secondary effect of not swallowing mouse wheel events
   /// and pinch gestures, so these will then scroll and zoom the page, respectively.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disable-zoom
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-disable-zoom
   final bool? disableZoom;
 
   /// Adjusts the speed of theta and phi orbit interactions. Can also be set
@@ -274,12 +274,12 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaults to 1.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-orbitSensitivity
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-orbitSensitivity
   final int? orbitSensitivity;
 
   /// Enables the auto-rotation of the model.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-autoRotate
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-autoRotate
   final bool? autoRotate;
 
   /// Sets the delay before auto-rotation begins. The format of the value is a
@@ -287,7 +287,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaults to 3000. Should be a number >= 0.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-autoRotateDelay
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-autoRotateDelay
   final int? autoRotateDelay;
 
   /// Sets the speed of auto-rotate, when enabled. Accepts values with units in
@@ -296,7 +296,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaults to "pi/32 radians".
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-rotationPerSecond
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-rotationPerSecond
   final String? rotationPerSecond;
 
   /// Allows you to change the conditions under which the visual and audible
@@ -310,7 +310,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You man use the [InteractionPrompt] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPrompt
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPrompt
   final InteractionPrompt? interactionPrompt;
 
   /// Configures the presentation style of the interaction-prompt when it is raised.
@@ -321,7 +321,7 @@ class ModelViewer extends StatefulWidget {
   ///
   /// You man use the [interactionPromptStyle] enum to set this attribute.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptStyle
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptStyle
   final InteractionPromptStyle? interactionPromptStyle;
 
   /// When camera-controls are enabled, <model-viewer> will prompt the user
@@ -330,7 +330,7 @@ class ModelViewer extends StatefulWidget {
   /// you to set how long <model-viewer> should wait (in milliseconds) before
   /// prompting to interact. Defaults to 3000.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptThreshold
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptThreshold
   final num? interactionPromptThreshold;
 
   /// Set the starting and/or subsequent orbital position of the camera.
@@ -353,7 +353,7 @@ class ModelViewer extends StatefulWidget {
   /// "calc(30deg - env(window-scroll-y) * 60deg) 75deg 1.5m" cause the camera
   /// to orbit horizontally around the model as the user scrolls down the page.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraOrbit
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraOrbit
   final String? cameraOrbit;
 
   /// Set the starting and/or subsequent point the camera orbits around.
@@ -364,7 +364,7 @@ class ModelViewer extends StatefulWidget {
   /// from its initially configured value, the camera will interpolate from its
   /// current position to the new value.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraTarget
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-cameraTarget
   final String? cameraTarget;
 
   /// Used to configure the vertical field of view of the camera. Accepts
@@ -377,7 +377,7 @@ class ModelViewer extends StatefulWidget {
   /// Seamless poster transitions for arbitrary element aspect ratios are only
   /// possible using "auto".
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-fieldOfView
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-fieldOfView
   final String? fieldOfView;
 
   /// Set the maximum orbital values of the camera. Takes values in the same
@@ -385,7 +385,7 @@ class ModelViewer extends StatefulWidget {
   /// an accepted keyword, but the default can still be obtained by passing "auto".
   /// The radius value for "auto" is the same as the camera-orbit radius "auto" value.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-maxCameraOrbit
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-maxCameraOrbit
   final String? maxCameraOrbit;
 
   /// Set the minimum orbital values of the camera. Note "Infinity" is not an
@@ -393,14 +393,14 @@ class ModelViewer extends StatefulWidget {
   /// The radius value for "auto" is a conservative value to ensure the camera
   /// never enters the model, so be careful when setting this to another value.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-minCameraOrbit
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-minCameraOrbit
   final String? minCameraOrbit;
 
   /// Set the maximum field of view of the camera, corresponding to maximum zoom-out.
   /// Takes values in the same form as field-of-view, but does not support env().
   /// The default "auto" is the same as the default field-of-view.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-maxFieldOfView
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-maxFieldOfView
   final String? maxFieldOfView;
 
   /// Set the minimum field of view of the camera, corresponding to maximum
@@ -408,7 +408,7 @@ class ModelViewer extends StatefulWidget {
   /// support env(). Set this to a small value to get close zoom-in without
   /// the camera entering the model.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-minFieldOfView
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-minFieldOfView
   final String? minFieldOfView;
 
   /// Controls the rate of interpolation when the camera or model moves, due to
@@ -416,7 +416,7 @@ class ModelViewer extends StatefulWidget {
   /// the value is in milliseconds, where the majority of the movement will occur
   /// within this value's time. Doubling this value will cut the speed in half.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interpolationDecay
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interpolationDecay
   final num? interpolationDecay;
 
   // Lighting & Env Attributes
@@ -426,7 +426,7 @@ class ModelViewer extends StatefulWidget {
   /// that's used for the skybox, as well as applied as an
   /// environment map on the model. Supports png, jpg and hdr (recommended) images.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-skyboxImage
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-skyboxImage
   final String? skyboxImage;
 
   /// Controls the environmental reflection of the model. Normally if
@@ -436,7 +436,7 @@ class ModelViewer extends StatefulWidget {
   /// If 'neutral' is specified without a skybox, then a more evenly-lit
   /// environment is applied instead.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-environmentImage
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-environmentImage
   final String? environmentImage;
 
   /// Controls the exposure of both the model and skybox, for use primarily with
@@ -444,21 +444,21 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaultes to 1. Shoukd be any positive value.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-exposure
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-exposure
   final num? exposure;
 
   /// Controls the opacity of the shadow. Set to 0 to turn off the shadow entirely.
   ///
   /// Defaultes to 0. Should be any any value between 0 and 1.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-shadowIntensity
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-shadowIntensity
   final num? shadowIntensity;
 
   /// Controls the blurriness of the shadow. Set to 0 for hard shadows. Softness should not be changed every frame as it incurs a performance cost. Softer shadows render faster.
   ///
   /// Defaultes to 1. Should be any any value between 0 and 1.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-shadowSoftness
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-shadowSoftness
   final num? shadowSoftness;
 
   // Animation Attributes
@@ -468,7 +468,7 @@ class ModelViewer extends StatefulWidget {
   /// If no animation-name is specified, <model-viewer> always picks the first
   /// animation it finds in the model.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-animationName
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-animationName
   final String? animationName;
 
   /// When the current animation is changed, <model-viewer> automatically
@@ -477,21 +477,21 @@ class ModelViewer extends StatefulWidget {
   ///
   /// Defaults to 300. Should be any number >= 0.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-animationCrossfadeDuration
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-animationCrossfadeDuration
   final num? animationCrossfadeDuration;
 
   /// If this is true and a model has animations, an animation will automatically
   /// begin to play when this attribute is set (or when the property is set to true).
   /// If no animation-name is specified, plays the first animation.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-autoplay
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-autoplay
   final bool? autoPlay;
 
   // Scene Graph Attributes
 
   /// Selects a model variant by name.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-variantName
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-variantName
   final String? variantName;
 
   /// Rotates the model to the orientation specified by roll, pitch, yaw Euler
@@ -501,7 +501,7 @@ class ModelViewer extends StatefulWidget {
   /// take this change into account; otherwise the updateFraming() method must
   /// be called manually.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-orientation
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-orientation
   final String? orientation;
 
   /// Scales the model as specified in the X, Y, and Z directions.
@@ -509,7 +509,7 @@ class ModelViewer extends StatefulWidget {
   /// automatic camera framing will take this change into account; otherwise the
   /// updateFraming() method must be called manually.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-scale
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-scenegraph-attributes-scale
   final String? scale;
 
   // CSS Styles
@@ -527,7 +527,7 @@ class ModelViewer extends StatefulWidget {
   /// model-viewer[ar-status="session-started"].
   /// Setting this attribute has no effect.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-css-arStatus
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-css-arStatus
   // final ArStatus? arStatus;
 
   /// This read-only attribute enables DOM content to be styled based on the
@@ -536,19 +536,19 @@ class ModelViewer extends StatefulWidget {
   /// Setting this attribute has no effect. Most AR tracking failures are due
   /// to the camera being covered or seeing little discernable texture
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-css-arTracking
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-augmentedreality-css-arTracking
   // final ArTracking? arTracking;
 
   // Annotations CSS
 
   /// Sets the opacity of hidden hotspots.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-annotations-css-minHotspotOpacity
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-annotations-css-minHotspotOpacity
   final num? minHotspotOpacity;
 
   /// Sets the opacity of visible hotspots.
   ///
-  /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-annotations-css-maxHotspotOpacity
+  /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-annotations-css-maxHotspotOpacity
   final num? maxHotspotOpacity;
 
   // Others

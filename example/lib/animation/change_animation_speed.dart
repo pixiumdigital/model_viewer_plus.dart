@@ -23,16 +23,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text("Model Viewer")),
+        appBar: AppBar(title: const Text('Model Viewer')),
         body: ModelViewer(
-          id: "change-speed-demo",
-          cameraControls: true,
-          animationName: "Dance",
+          id: 'change-speed-demo',
+          animationName: 'Dance',
           ar: true,
           shadowIntensity: 1,
           src:
-              "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
-          alt: "An animate 3D model of a robot",
+              'https://modelviewer.dev/shared-assets/models/RobotExpressive.glb',
+          alt: 'An animate 3D model of a robot',
           backgroundColor: const Color.fromARGB(0xFF, 0xEE, 0xEE, 0xEE),
           relatedJs: js,
         ),

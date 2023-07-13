@@ -7,7 +7,7 @@ import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
 
 void main() => runApp(const MyApp());
 
-String js = r'''
+String js = '''
 const modelViewerColor = document.querySelector("model-viewer#color");
 
 document.querySelector('#color-controls').addEventListener('click', (event) => {
@@ -18,7 +18,7 @@ document.querySelector('#color-controls').addEventListener('click', (event) => {
 
 ''';
 
-String html = r'''
+String html = '''
   <div class="controls" id="color-controls">
     <button data-color="#ff0000">Red</button>
     <button data-color="#00ff00">Green</button>
@@ -27,8 +27,11 @@ String html = r'''
 ''';
 
 NodeValidatorBuilder myNodeValidatorBuilder = defaultNodeValidatorBuilder
-  ..allowElement('button',
-      attributes: ['data-color'], uriPolicy: AllowAllUri());
+  ..allowElement(
+    'button',
+    attributes: ['data-color'],
+    uriPolicy: AllowAllUri(),
+  );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -37,15 +40,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text("Model Viewer")),
+        appBar: AppBar(title: const Text('Model Viewer')),
         body: ModelViewer(
-          id: "color",
+          id: 'color',
           src: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
-          alt: "A 3D model of an astronaut",
+          alt: 'A 3D model of an astronaut',
           touchAction: TouchAction.panY,
           ar: true,
-          orientation: "20deg 0 0",
-          cameraControls: true,
+          orientation: '20deg 0 0',
           relatedJs: js,
           innerModelViewerHtml: html,
           overwriteNodeValidatorBuilder: myNodeValidatorBuilder,

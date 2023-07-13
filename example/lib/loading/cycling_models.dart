@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 void main() => runApp(const MyApp());
+
 String js = r'''
 const models = ['shishkebab.glb', 'Astronaut.glb'];
 const toggleModel = document.querySelector('#toggle-model');
@@ -16,16 +17,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(title: const Text("Model Viewer")),
-          body: ModelViewer(
-            id: "toggle-model",
-            src: "https://modelviewer.dev/shared-assets/models/shishkebab.glb",
-            alt: "A 3D model of a shishkebab",
-            shadowIntensity: 1,
-            cameraControls: true,
-            autoRotate: true,
-            relatedJs: js,
-          )),
+        appBar: AppBar(title: const Text('Model Viewer')),
+        body: ModelViewer(
+          id: 'toggle-model',
+          src: 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
+          alt: 'A 3D model of a shishkebab',
+          shadowIntensity: 1,
+          autoRotate: true,
+          relatedJs: js,
+        ),
+      ),
     );
   }
 }
