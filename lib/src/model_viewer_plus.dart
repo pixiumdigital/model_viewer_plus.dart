@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
-import 'model_viewer_plus_stub.dart'
+import 'package:model_viewer_plus/src/model_viewer_plus_stub.dart'
     if (dart.library.io) 'model_viewer_plus_mobile.dart'
     if (dart.library.js) 'model_viewer_plus_web.dart';
-import 'shim/dart_html_fake.dart' if (dart.library.html) 'dart:html';
+import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
+    if (dart.library.html) 'dart:html';
+import 'package:webview_flutter/webview_flutter.dart';
 
 enum Loading { auto, lazy, eager }
 
@@ -25,16 +25,16 @@ enum InteractionPromptStyle { wiggle, basic }
 // enum ArTracking { tracking, notTracking }
 
 class JavascriptChannel {
+  const JavascriptChannel(this.name, {required this.onMessageReceived});
+
   final String name;
   final void Function(JavaScriptMessage) onMessageReceived;
-
-  JavascriptChannel(this.name, {required this.onMessageReceived});
 }
 
 /// Flutter widget for rendering interactive 3D models.
 class ModelViewer extends StatefulWidget {
-  ModelViewer({
-    Key? key,
+  const ModelViewer({
+    super.key,
     this.backgroundColor = Colors.transparent,
     required this.src,
     this.alt,
@@ -91,7 +91,7 @@ class ModelViewer extends StatefulWidget {
     this.overwriteNodeValidatorBuilder,
     this.javascriptChannels,
     this.onWebViewCreated,
-  }) : super(key: key);
+  });
 
   // Loading Attributes
 
@@ -421,8 +421,9 @@ class ModelViewer extends StatefulWidget {
 
   // Lighting & Env Attributes
 
-  /// Sets the background image of the scene. Takes a URL to an [equirectangular
-  /// projection image](https://en.wikipedia.org/wiki/Equirectangular_projection) that's used for the skybox, as well as applied as an
+  /// Sets the background image of the scene. Takes a URL to an
+  /// [equirectangular projection image](https://en.wikipedia.org/wiki/Equirectangular_projection)
+  /// that's used for the skybox, as well as applied as an
   /// environment map on the model. Supports png, jpg and hdr (recommended) images.
   ///
   /// `<model-viewer>` offical document: https://modelviewer.dev/docs/#entrydocs-lightingandenv-attributes-skyboxImage
@@ -577,7 +578,7 @@ class ModelViewer extends StatefulWidget {
   /// The id of the [ModelViewer] in HTML.
   final String? id;
 
-  /// If false, [HTMLBuilder] will not print debug logs.
+  /// If false, HTMLBuilder will not print debug logs.
   ///
   /// Defaults to true;
   final bool? debugLogging;
@@ -626,7 +627,7 @@ class ModelViewer extends StatefulWidget {
   /// Passthrough to `onWebViewCreated` in the underlying `WebView`.
   ///
   /// Called *after* the logic that initializes the model-viewer.
-  final Function(WebViewController controller)? onWebViewCreated;
+  final void Function(WebViewController controller)? onWebViewCreated;
 
   @override
   State<ModelViewer> createState() => ModelViewerState();
