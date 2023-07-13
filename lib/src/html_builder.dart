@@ -1,9 +1,8 @@
-/* This is free and unencumbered software released into the public domain. */
-
 import 'dart:convert' show htmlEscape;
 
 import 'package:flutter/material.dart';
-import 'package:model_viewer_plus/model_viewer_plus.dart';
+
+import '../model_viewer_plus.dart';
 
 abstract class HTMLBuilder {
   HTMLBuilder._();
@@ -12,7 +11,7 @@ abstract class HTMLBuilder {
     // Attributes
     // Loading Attributes
     required final String src,
-    String htmlTemplate = '',
+    String? htmlTemplate,
     final String? alt,
     final String? poster,
     final Loading? loading,
@@ -75,11 +74,13 @@ abstract class HTMLBuilder {
     final String? id,
     final bool? debugLogging,
   }) {
-    if (relatedCss != null) {
-      htmlTemplate = htmlTemplate.replaceFirst('/* other-css */', relatedCss);
+    var newHtmlTemplate = '';
+    if (relatedCss != null && htmlTemplate != null) {
+      newHtmlTemplate =
+          htmlTemplate.replaceFirst('/* other-css */', relatedCss);
     }
 
-    final modelViewerHtml = StringBuffer()
+    final modelViewerHtml = StringBuffer(newHtmlTemplate)
       ..write('<model-viewer')
       // Attributes
       // Loading Attributes
@@ -98,13 +99,10 @@ abstract class HTMLBuilder {
       switch (loading) {
         case Loading.auto:
           modelViewerHtml.write(' loading="auto"');
-          break;
         case Loading.lazy:
           modelViewerHtml.write(' loading="lazy"');
-          break;
         case Loading.eager:
           modelViewerHtml.write(' loading="eager"');
-          break;
       }
     }
     // reveal
@@ -112,13 +110,10 @@ abstract class HTMLBuilder {
       switch (reveal) {
         case Reveal.auto:
           modelViewerHtml.write(' reveal="auto"');
-          break;
         case Reveal.interaction:
           modelViewerHtml.write(' reveal="interaction"');
-          break;
         case Reveal.manual:
           modelViewerHtml.write(' reveal="manual"');
-          break;
       }
     }
     // with-credentials
@@ -141,10 +136,8 @@ abstract class HTMLBuilder {
       switch (arScale) {
         case ArScale.auto:
           modelViewerHtml.write(' ar-scale="auto"');
-          break;
         case ArScale.fixed:
           modelViewerHtml.write(' ar-scale="fixed"');
-          break;
       }
     }
     // ar-placement
@@ -152,10 +145,8 @@ abstract class HTMLBuilder {
       switch (arPlacement) {
         case ArPlacement.floor:
           modelViewerHtml.write(' ar-placement="floor"');
-          break;
         case ArPlacement.wall:
           modelViewerHtml.write(' ar-placement="wall"');
-          break;
       }
     }
     // ios-src
@@ -185,13 +176,10 @@ abstract class HTMLBuilder {
       switch (touchAction) {
         case TouchAction.none:
           modelViewerHtml.write(' touch-action="none"');
-          break;
         case TouchAction.panX:
           modelViewerHtml.write(' touch-action="pan-x"');
-          break;
         case TouchAction.panY:
           modelViewerHtml.write(' touch-action="pan-y"');
-          break;
       }
     }
     // disable-zoom
@@ -221,13 +209,10 @@ abstract class HTMLBuilder {
       switch (interactionPrompt) {
         case InteractionPrompt.auto:
           modelViewerHtml.write(' interaction-prompt="auto"');
-          break;
         case InteractionPrompt.none:
           modelViewerHtml.write(' interaction-prompt="none"');
-          break;
         case InteractionPrompt.whenFocused:
           modelViewerHtml.write(' interaction-prompt="when-focused"');
-          break;
       }
     }
     // interaction-prompt-style
@@ -235,10 +220,8 @@ abstract class HTMLBuilder {
       switch (interactionPromptStyle) {
         case InteractionPromptStyle.basic:
           modelViewerHtml.write(' interaction-prompt-style="basic"');
-          break;
         case InteractionPromptStyle.wiggle:
           modelViewerHtml.write(' interaction-prompt-style="wiggle"');
-          break;
       }
     }
     // interaction-prompt-threshold
@@ -406,8 +389,13 @@ abstract class HTMLBuilder {
     if (debugLogging ?? false) {
       debugPrint('HTML generated for model_viewer_plus:');
     }
-    final html =
-        htmlTemplate.replaceFirst('<!-- body -->', modelViewerHtml.toString());
+
+    final html = newHtmlTemplate.contains('<!-- body -->')
+        ? newHtmlTemplate.replaceFirst(
+            '<!-- body -->',
+            modelViewerHtml.toString(),
+          )
+        : modelViewerHtml.toString();
 
     if (debugLogging ?? false) {
       debugPrint(html); // DEBUG

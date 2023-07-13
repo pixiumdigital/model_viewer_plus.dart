@@ -16,17 +16,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(title: const Text("Model Viewer")),
-          body: ModelViewer(
-            id: "revea",
-            loading: Loading.eager,
-            cameraControls: true,
-            autoRotate: true,
-            poster: "https://modelviewer.dev/assets/poster-shishkebab.webp",
-            src: "https://modelviewer.dev/shared-assets/models/shishkebab.glb",
-            alt: "A 3D model of a shishkebab",
-            relatedCss: css,
-          )),
+        appBar: AppBar(title: const Text('Model Viewer')),
+        body: ModelViewer(
+          id: 'revea',
+          loading: Loading.eager,
+          autoRotate: true,
+          poster: 'https://modelviewer.dev/assets/poster-shishkebab.webp',
+          src: 'https://modelviewer.dev/shared-assets/models/shishkebab.glb',
+          alt: 'A 3D model of a shishkebab',
+          relatedCss: css,
+        ),
+      ),
     );
   }
 }

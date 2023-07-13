@@ -10,14 +10,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text("Model Viewer")),
+        appBar: AppBar(title: const Text('Model Viewer')),
         body: const ModelViewer(
-          cameraControls: true,
           skyboxImage:
-              "https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr",
-          alt: "A 3D model of a damaged helmet",
+              'https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr',
+          alt: 'A 3D model of a damaged helmet',
           src:
-              "https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf",
+              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf',
         ),
       ),
     );

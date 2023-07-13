@@ -3,7 +3,7 @@ import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 void main() => runApp(const MyApp());
 
-String js = r'''
+String js = '''
 const modelViewerVariants = document.querySelector("model-viewer#shoe");
 const select = document.querySelector('#variant');
 
@@ -27,7 +27,7 @@ select.addEventListener('input', (event) => {
 });
 ''';
 
-String html = r'''
+String html = '''
 <div class="controls">
   <div>Variant: <select id="variant"></select></div>
 </div>
@@ -40,15 +40,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text("Model Viewer")),
+        appBar: AppBar(title: const Text('Model Viewer')),
         body: ModelViewer(
-          id: "shoe",
+          id: 'shoe',
           src:
               'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-          alt: "A 3D model of a Shoe",
+          alt: 'A 3D model of a Shoe',
           ar: true,
           arModes: const ['scene-viewer', 'webxr', 'quick-look'],
-          cameraControls: true,
           relatedJs: js,
           innerModelViewerHtml: html,
         ),

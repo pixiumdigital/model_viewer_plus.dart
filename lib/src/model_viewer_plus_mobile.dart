@@ -1,18 +1,13 @@
-/* This is free and unencumbered software released into the public domain. */
-
-// ignore_for_file: depend_on_referenced_packages, unawaited_futures
+// ignore_for_file: unawaited_futures
 import 'dart:async';
 import 'dart:convert' show utf8;
-import 'dart:io'
-    show File, HttpRequest, HttpServer, HttpStatus, InternetAddress, Platform;
+import 'dart:io' show File, HttpServer, HttpStatus, InternetAddress, Platform;
 
 import 'package:android_intent_plus/android_intent.dart' as android_content;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:model_viewer_plus/src/html_builder.dart';
-import 'package:model_viewer_plus/src/model_viewer_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -20,6 +15,9 @@ import 'package:webview_flutter_android/webview_flutter_android.dart'
     as android;
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart'
     as ios;
+
+import 'html_builder.dart';
+import 'model_viewer_plus.dart';
 
 class ModelViewerState extends State<ModelViewer> {
   WebViewController? _controller;
@@ -114,14 +112,11 @@ class ModelViewerState extends State<ModelViewer> {
       variantName: widget.variantName,
       orientation: widget.orientation,
       scale: widget.scale,
-
       // CSS Styles
       backgroundColor: widget.backgroundColor,
-
       // Annotations CSS
       minHotspotOpacity: widget.minHotspotOpacity,
       maxHotspotOpacity: widget.maxHotspotOpacity,
-
       // Others
       innerModelViewerHtml: widget.innerModelViewerHtml,
       relatedCss: widget.relatedCss,
@@ -179,7 +174,6 @@ class ModelViewerState extends State<ModelViewer> {
               //   ], // Intent.FLAG_ACTIVITY_NEW_TASK,
               // );
 
-              // 2022-03-14 update
               final String fileURL;
               if (['http', 'https'].contains(Uri.parse(widget.src).scheme)) {
                 fileURL = widget.src;
@@ -196,8 +190,6 @@ class ModelViewerState extends State<ModelViewer> {
                   host: 'arvr.google.com',
                   path: '/scene-viewer/1.0',
                   queryParameters: {
-                    // 'title': '', // TODO: maybe set by the user
-                    // TODO: further test, and make it 'ar_preferred'
                     'mode': 'ar_preferred',
                     'file': fileURL,
                   },
@@ -248,9 +240,7 @@ class ModelViewerState extends State<ModelViewer> {
       _proxyURL = 'http://$host:$port/';
     });
 
-    _proxy!.listen((final HttpRequest request) async {
-      //debugPrint("${request.method} ${request.uri}"); // DEBUG
-      //debugPrint(request.headers); // DEBUG
+    _proxy!.listen((request) async {
       final response = request.response;
 
       switch (request.uri.path) {
@@ -265,8 +255,6 @@ class ModelViewerState extends State<ModelViewer> {
             ..headers.add('Content-Length', html.length.toString())
             ..add(html);
           await response.close();
-          break;
-
         case '/model-viewer.min.js':
           final code = await _readAsset(
             'packages/model_viewer_plus/assets/model-viewer.min.js',
@@ -278,12 +266,9 @@ class ModelViewerState extends State<ModelViewer> {
             ..headers.add('Content-Length', code.lengthInBytes.toString())
             ..add(code);
           await response.close();
-          break;
-
         case '/model':
           if (url.isAbsolute && !url.isScheme('file')) {
-            // debugPrint(url.toString());
-            await response.redirect(url); // TODO: proxy the resource
+            await response.redirect(url);
           } else {
             final data = await (url.isScheme('file')
                 ? _readFile(url.path)
@@ -296,7 +281,6 @@ class ModelViewerState extends State<ModelViewer> {
               ..add(data);
             await response.close();
           }
-          break;
 
         case '/favicon.ico':
           final text = utf8.encode("Resource '${request.uri}' not found");
@@ -306,7 +290,6 @@ class ModelViewerState extends State<ModelViewer> {
             ..headers.add('Content-Length', text.length.toString())
             ..add(text);
           await response.close();
-          break;
 
         default:
           if (request.uri.isAbsolute) {

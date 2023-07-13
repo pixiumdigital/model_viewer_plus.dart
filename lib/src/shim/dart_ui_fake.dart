@@ -9,7 +9,7 @@
 class platformViewRegistry {
   /// Shim for registerViewFactory
   /// https://github.com/flutter/engine/blob/master/lib/web_ui/lib/ui_web/src/ui_web/platform_view_registry.dart
-  /// TODO: update after Flutter > 3.12
+  // TODO(Carapacik): update after Flutter 3.13
   static bool registerViewFactory(
     String viewTypeId,
     Object Function(int viewId) viewFactory, {

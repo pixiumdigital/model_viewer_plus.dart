@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 void main() => runApp(const MyApp());
-String js = r'''
+
+String js = '''
   const reportedDpr = document.querySelector('#reportedDpr');
   const renderedDpr = document.querySelector('#renderedDpr');
   const minimumDpr = document.querySelector('#minimumDpr');
@@ -52,18 +53,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(title: const Text("Model Viewer")),
-          body: ModelViewer(
-            id: "scale",
-            src:
-                "https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/ToyCar/glTF-Binary/ToyCar.glb",
-            alt: "A 3D model of a toy car",
-            cameraControls: true,
-            touchAction: TouchAction.panY,
-            ar: true,
-            relatedJs: js,
-            innerModelViewerHtml: innerHtml,
-          )),
+        appBar: AppBar(title: const Text('Model Viewer')),
+        body: ModelViewer(
+          id: 'scale',
+          src:
+              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/ToyCar/glTF-Binary/ToyCar.glb',
+          alt: 'A 3D model of a toy car',
+          touchAction: TouchAction.panY,
+          ar: true,
+          relatedJs: js,
+          innerModelViewerHtml: innerHtml,
+        ),
+      ),
     );
   }
 }
