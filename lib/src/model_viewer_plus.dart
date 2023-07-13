@@ -4,7 +4,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'model_viewer_plus_stub.dart'
     if (dart.library.io) 'model_viewer_plus_mobile.dart'
     if (dart.library.js) 'model_viewer_plus_web.dart';
-
 import 'shim/dart_html_fake.dart' if (dart.library.html) 'dart:html';
 
 enum Loading { auto, lazy, eager }
@@ -24,6 +23,13 @@ enum InteractionPromptStyle { wiggle, basic }
 // enum ArStatus { notPresenting, sessionStarted, objectPlaced, failed }
 
 // enum ArTracking { tracking, notTracking }
+
+class JavascriptChannel {
+  final String name;
+  final void Function(JavaScriptMessage) onMessageReceived;
+
+  JavascriptChannel(this.name, {required this.onMessageReceived});
+}
 
 /// Flutter widget for rendering interactive 3D models.
 class ModelViewer extends StatefulWidget {
