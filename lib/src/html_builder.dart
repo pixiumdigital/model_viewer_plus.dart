@@ -11,7 +11,7 @@ abstract class HTMLBuilder {
     // Attributes
     // Loading Attributes
     required final String src,
-    String? htmlTemplate,
+    String htmlTemplate = '',
     final String? alt,
     final String? poster,
     final Loading? loading,
@@ -74,13 +74,12 @@ abstract class HTMLBuilder {
     final String? id,
     final bool? debugLogging,
   }) {
-    var newHtmlTemplate = '';
-    if (relatedCss != null && htmlTemplate != null) {
-      newHtmlTemplate =
-          htmlTemplate.replaceFirst('/* other-css */', relatedCss);
+    if (relatedCss != null) {
+      // ignore: parameter_assignments
+      htmlTemplate = htmlTemplate.replaceFirst('/* other-css */', relatedCss);
     }
 
-    final modelViewerHtml = StringBuffer(newHtmlTemplate)
+    final modelViewerHtml = StringBuffer()
       ..write('<model-viewer')
       // Attributes
       // Loading Attributes
@@ -389,13 +388,8 @@ abstract class HTMLBuilder {
     if (debugLogging ?? false) {
       debugPrint('HTML generated for model_viewer_plus:');
     }
-
-    final html = newHtmlTemplate.contains('<!-- body -->')
-        ? newHtmlTemplate.replaceFirst(
-            '<!-- body -->',
-            modelViewerHtml.toString(),
-          )
-        : modelViewerHtml.toString();
+    final html =
+        htmlTemplate.replaceFirst('<!-- body -->', modelViewerHtml.toString());
 
     if (debugLogging ?? false) {
       debugPrint(html);

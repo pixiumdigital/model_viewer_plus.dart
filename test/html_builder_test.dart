@@ -8,7 +8,7 @@ void main() {
     test('supports the src and backgroundColor attributes', () {
       final html = HTMLBuilder.build(
         src: 'src.glb',
-        htmlTemplate: '',
+        htmlTemplate: '<!-- body -->',
         backgroundColor: const Color(0xFFABCDEF),
       );
       expect(

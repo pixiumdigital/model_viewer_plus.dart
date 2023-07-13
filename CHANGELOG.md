@@ -2,6 +2,8 @@
 
 ### Changed
 - Specify platforms
+### Fixed
+- Error with replaceAll on empty string
 
 ## 1.6.0
 

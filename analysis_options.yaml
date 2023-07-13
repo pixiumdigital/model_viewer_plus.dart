@@ -2,5 +2,5 @@ include: package:carapacik_lints/core.yaml
 
 linter:
   rules:
-    prefer_relative_imports: true
     always_use_package_imports: false
+    prefer_relative_imports: true
