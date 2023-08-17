@@ -193,7 +193,7 @@ class ModelViewerState extends State<ModelViewer> {
               package: 'com.google.android.googlequicksearchbox',
               arguments: <String, dynamic>{
                 'browser_fallback_url':
-                    'market://details?id=com.google.android.googlequicksearchbox'
+                    'market://details?id=com.google.android.googlequicksearchbox',
               },
             );
             await intent.launch().onError((error, stackTrace) {
@@ -288,7 +288,7 @@ class ModelViewerState extends State<ModelViewer> {
             final tryDestination = p.joinAll([
               url.origin,
               ...pathSegments,
-              request.uri.path.replaceFirst('/', '')
+              request.uri.path.replaceFirst('/', ''),
             ]);
             debugPrint('Try: $tryDestination');
             await response.redirect(Uri.parse(tryDestination));

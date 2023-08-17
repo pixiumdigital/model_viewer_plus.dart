@@ -3,14 +3,14 @@ description: A project that showcases usage of model_viewer
 publish_to: 'none'
 version: 1.0.0+1
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.1.0
 
 dependencies:
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  carapacik_lints: ^1.4.1
+  carapacik_lints: ^1.5.0
   model_viewer_plus:
     path:
       ../

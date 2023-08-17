@@ -6,7 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'html_builder.dart';
 import 'model_viewer_plus.dart';
 import 'shim/dart_html_fake.dart' if (dart.library.html) 'dart:html';
-import 'shim/dart_ui_fake.dart' if (dart.library.html) 'dart:ui' as ui;
+import 'shim/dart_ui_fake.dart' if (dart.library.html) 'dart:ui_web' as ui_web;
 
 class ModelViewerState extends State<ModelViewer> {
   bool _isLoading = true;
@@ -29,7 +29,7 @@ class ModelViewerState extends State<ModelViewer> {
 
     final html = _buildHTML(htmlTemplate);
 
-    ui.platformViewRegistry.registerViewFactory(
+    ui_web.platformViewRegistry.registerViewFactory(
       'model-viewer-html-$_uniqueViewType',
       (viewId) => HtmlHtmlElement()
         // ignore: avoid_dynamic_calls
@@ -154,7 +154,7 @@ NodeValidatorBuilder defaultNodeValidatorBuilder = NodeValidatorBuilder.common()
       'integrity',
       'nomodule',
       'nonce',
-      'referrerpolicy'
+      'referrerpolicy',
     ],
     uriPolicy: AllowAllUri(),
   )

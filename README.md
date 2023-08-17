@@ -12,9 +12,9 @@ web component in a [WebView](https://pub.dev/packages/webview_flutter).
 
 ## Screenshot
 
-<img alt="Screenshot of astronaut model" src="./example/flutter_01.png" width="480"/>
+<img src="https://raw.githubusercontent.com/omchiii/model_viewer_plus.dart/master/example/flutter_01.png" width="480" />
 
-<img alt="Screenshot of astronaut model" src="./example/flutter_02.png" width="480"/>
+<img src="https://raw.githubusercontent.com/omchiii/model_viewer_plus.dart/master/example/flutter_02.png" width="480" />
 
 ## Compatibility
 

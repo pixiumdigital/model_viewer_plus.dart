@@ -1,3 +1,10 @@
+## 1.7.0
+
+### Changed
+- Fake for web implementation for Flutter 3.13
+### Fixed
+- Links for images in README
+
 ## 1.6.1
 
 ### Changed
