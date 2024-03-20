@@ -34,7 +34,7 @@ If [Google Play Services for AR (ARCore, `com.google.ar.core`)](https://play.goo
 
 ```yaml
 dependencies:
-  model_viewer_plus: ^1.6.0
+  model_viewer_plus: ^1.7.1
 ```
 
 ### `AndroidManifest.xml` (Android 9+ only)

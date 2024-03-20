@@ -1,3 +1,8 @@
+## 1.7.1
+
+### Changed
+- Update dependencies
+
 ## 1.7.0
 
 ### Changed
