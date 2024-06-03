@@ -5,7 +5,6 @@ repository: https://github.com/omchiii/model_viewer_plus.dart
 topics:
   - model-viewer
   - model
-  - 3d
 platforms:
   android:
   ios:
