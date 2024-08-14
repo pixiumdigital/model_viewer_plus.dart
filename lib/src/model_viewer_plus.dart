@@ -4,7 +4,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'model_viewer_plus_stub.dart'
     if (dart.library.io) 'model_viewer_plus_mobile.dart'
     if (dart.library.js_interop) 'model_viewer_plus_web.dart';
-import 'shim/dart_web_fake.dart' if (dart.library.js_interop) 'dart:html';
 
 enum Loading { auto, lazy, eager }
 
@@ -87,7 +86,6 @@ class ModelViewer extends StatefulWidget {
     this.relatedJs,
     this.id,
     this.debugLogging = true,
-    this.overwriteNodeValidatorBuilder,
     this.javascriptChannels,
     this.onWebViewCreated,
     super.key,
@@ -140,7 +138,7 @@ class ModelViewer extends StatefulWidget {
 
   /// This attribute controls when the model should be revealed. It currently
   /// supports three values: "auto", "interaction", and "manual". If reveal is
-  /// set to "interaction", <model-viewer> will wait until the user interacts
+  /// set to "interaction", `<model-viewer>` will wait until the user interacts
   /// with the poster before loading and revealing the model. If reveal is set
   /// to "auto", the model will be revealed as soon as it is done loading and
   /// rendering. If reveal is set to "manual", the model will remain hidden
@@ -250,7 +248,7 @@ class ModelViewer extends StatefulWidget {
 
   /// Akin to the CSS touch-action property (which does not work due to some
   /// iOS bugs), the default 'pan-y' allows touch users to vertically scroll
-  /// the <model-viewer> element, but can interact if their gesture starts
+  /// the `<model-viewer>` element, but can interact if their gesture starts
   /// horizontal. Legacy behavior can be achieved with 'none', where all
   /// scrolling is prevented, while 'pan-x' is the opposite of
   /// 'pan-y'. The normal CSS default 'auto' is not allowed here,
@@ -324,10 +322,10 @@ class ModelViewer extends StatefulWidget {
   /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptStyle
   final InteractionPromptStyle? interactionPromptStyle;
 
-  /// When camera-controls are enabled, <model-viewer> will prompt the user
+  /// When camera-controls are enabled, `<model-viewer>` will prompt the user
   /// visually (and audibly, for screen readers) to interact if they
   /// focus it but don't interact with it for some time. This attribute allows
-  /// you to set how long <model-viewer> should wait (in milliseconds) before
+  /// you to set how long `<model-viewer>` should wait (in milliseconds) before
   /// prompting to interact. Defaults to 3000.
   ///
   /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-stagingandcameras-attributes-interactionPromptThreshold
@@ -464,16 +462,16 @@ class ModelViewer extends StatefulWidget {
   // Animation Attributes
 
   /// Selects an animation to play by name. This animation will play when the `.play()`
-  /// method is invoked, or when the <model-viewer> is configured to autoplay.
-  /// If no animation-name is specified, <model-viewer> always picks the first
+  /// method is invoked, or when the `<model-viewer>` is configured to autoplay.
+  /// If no animation-name is specified, `<model-viewer>` always picks the first
   /// animation it finds in the model.
   ///
   /// `<model-viewer>` official document: https://modelviewer.dev/docs/#entrydocs-animation-attributes-animationName
   final String? animationName;
 
-  /// When the current animation is changed, <model-viewer> automatically
-  /// crossfades between the previous and next animations.
-  /// This attribute controls how long the crossfade is in milliseconds.
+  /// When the current animation is changed, `<model-viewer>` automatically
+  /// cross fades between the previous and next animations.
+  /// This attribute controls how long the cross fade is in milliseconds.
   ///
   /// Defaults to 300. Should be any number >= 0.
   ///
@@ -554,19 +552,8 @@ class ModelViewer extends StatefulWidget {
   // Others
   /// HTML code inside `<model-viewer>` Tag.
   ///
-  /// If you choose too use [innerModelViewerHtml], you may need to set [overwriteNodeValidatorBuilder].
   /// On the Web platform, not all the HTML tags and attributes are allowed due to performance reasons.
   /// You may see `Removing disallowed attribute ...` from the console if the tag / attribute is not allowed.
-  ///
-  /// This package only allows the following elements and attributes by default:
-  ///
-  /// - Elements allowed by [NodeValidatorBuilder.common()](https://api.flutter.dev/flutter/dart-html/NodeValidatorBuilder/NodeValidatorBuilder.common.html)
-  /// - `<meta>`, with attributes ***name, content***
-  /// - `<style>`
-  /// - `<script>`, with attributes ***src, type, defer, async, crossorigin, integrity, nomodule, nonce, referrerpolicy***
-  /// - `<model-viewer>`, with all the attributes that `<model-viewer>` supports
-  ///
-  /// Please take a look at [overwriteNodeValidatorBuilder] for more information.
   final String? innerModelViewerHtml;
 
   /// Custom CSS
@@ -581,45 +568,7 @@ class ModelViewer extends StatefulWidget {
   /// If false, HTMLBuilder will not print debug logs.
   ///
   /// Defaults to true;
-  final bool? debugLogging;
-
-  /// Customize allowed tags & attrubutes for Web platform.
-  ///
-  /// Solution of console output `Removing disallowed attribute ...`.
-  ///
-  /// In [model-viewer Change Color Example](https://modelviewer.dev/examples/scenegraph/#changeColor),
-  /// we can see codes like:
-  ///
-  /// ```html
-  /// <model-viewer id="color" camera-controls touch-action="pan-y" interaction-prompt="none" src="../../shared-assets/models/Astronaut.glb" ar alt="A 3D model of an astronaut">
-  ///   <div class="controls" id="color-controls">
-  ///     <button data-color="#ff0000">Red</button>
-  ///     <!-- ... some codes ... -->
-  ///   </div>
-  /// </model-viewer>
-  /// ```
-  ///
-  /// If [overwriteNodeValidatorBuilder] is not specified, you may see
-  /// `Removing disallowed attribute <BUTTON data-color="#0000ff">` in the console.
-  /// To make them work on Flutter Web, you need to copy our
-  /// defaultNodeValidatorBuilder and specify [overwriteNodeValidatorBuilder]
-  /// for your need. You may do something like:
-  ///
-  /// ```dart
-  /// import 'package:model_viewer_plus/src/model_viewer_plus_web.dart';
-  /// import 'package:model_viewer_plus/src/shim/dart_html_fake.dart'
-  ///     if (dart.library.html) 'dart:html';
-  ///
-  /// NodeValidatorBuilder myNodeValidatorBuilder = defaultNodeValidatorBuilder
-  ///  ..allowElement('button',
-  ///      attributes: ['data-color'], uriPolicy: AllowAllUri());
-  ///
-  /// ModelViewer(overwriteNodeValidatorBuilder: myNodeValidatorBuilder,);
-  /// ```
-  ///
-  /// See also: [NodeValidatorBuilder](https://api.flutter.dev/flutter/dart-html/NodeValidatorBuilder-class.html)
-  ///
-  final NodeValidatorBuilder? overwriteNodeValidatorBuilder;
+  final bool debugLogging;
 
   /// Passthrough to `javascriptChannels` in the underlying `WebView`.
   final Set<JavascriptChannel>? javascriptChannels;

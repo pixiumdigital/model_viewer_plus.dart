@@ -1,70 +1,18 @@
-class HtmlHtmlElement {
-  dynamic get style => null;
+// ignore_for_file: avoid_setters_without_getters
+class HTMLHtmlElement {
+  CSSStyleDeclarationX get style => CSSStyleDeclarationX._(Object);
 
-  void setInnerHtml(String html, {NodeValidator? validator}) {}
+  set innerHTML(Object html) {}
 }
 
-class NodeValidatorBuilder extends NodeValidator {
-  NodeValidatorBuilder.common();
+extension type CSSStyleDeclarationX._(Object _) implements Object {
+  set width(String width) {}
 
-  void add(NodeValidator validator) {}
+  set height(String height) {}
 
-  void allowCustomElement(
-    String tagName, {
-    UriPolicy? uriPolicy,
-    Iterable<String>? attributes,
-    Iterable<String>? uriAttributes,
-  }) {}
-
-  void allowElement(
-    String tagName, {
-    UriPolicy? uriPolicy,
-    Iterable<String>? attributes,
-    Iterable<String>? uriAttributes,
-  }) {}
-
-  void allowHtml5({UriPolicy? uriPolicy}) {}
-
-  void allowImages([UriPolicy? uriPolicy]) {}
-
-  void allowInlineStyles({String? tagName}) {}
-
-  void allowNavigation([UriPolicy? uriPolicy]) {}
-
-  @override
-  bool allowsAttribute(Element element, String attributeName, String value) {
-    return true;
-  }
-
-  @override
-  bool allowsElement(Element element) {
-    return true;
-  }
-
-  void allowSvg() {}
-
-  void allowTagExtension(
-    String tagName,
-    String baseName, {
-    UriPolicy? uriPolicy,
-    Iterable<String>? attributes,
-    Iterable<String>? uriAttributes,
-  }) {}
-
-  void allowTemplating() {}
-
-  void allowTextElements() {}
+  set border(String border) {}
 }
 
-abstract class Element {}
-
-abstract class NodeValidator {
-  bool allowsAttribute(Element element, String attributeName, String value);
-
-  bool allowsElement(Element element);
-}
-
-// ignore: one_member_abstracts
-abstract class UriPolicy {
-  bool allowsUri(String uri);
+extension ToJSX on String {
+  String get toJS => '';
 }

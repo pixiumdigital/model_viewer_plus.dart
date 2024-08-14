@@ -28,9 +28,9 @@ select.addEventListener('input', (event) => {
 ''';
 
 String html = '''
-<div class="controls">
-  <div>Variant: <select id="variant"></select></div>
-</div>
+  <div class="controls">
+    <div>Variant: <select id="variant"></select></div>
+  </div>
 ''';
 
 class MyApp extends StatelessWidget {
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
         body: ModelViewer(
           id: 'shoe',
           src:
-              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
           alt: 'A 3D model of a Shoe',
           ar: true,
           arModes: const ['scene-viewer', 'webxr', 'quick-look'],
