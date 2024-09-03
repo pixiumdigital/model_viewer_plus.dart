@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
-import 'package:model_viewer_plus/src/model_viewer_plus_web.dart';
-import 'package:model_viewer_plus/src/shim/dart_web_fake.dart'
-    if (dart.library.js_interop) 'dart:html';
 
 void main() => runApp(const MyApp());
 
@@ -14,7 +11,6 @@ document.querySelector('#color-controls').addEventListener('click', (event) => {
   const [material] = modelViewerColor.model.materials;
   material.pbrMetallicRoughness.setBaseColorFactor(colorString);
 });
-
 ''';
 
 String html = '''
@@ -24,13 +20,6 @@ String html = '''
     <button data-color="#0000ff">Blue</button>
   </div>
 ''';
-
-NodeValidatorBuilder myNodeValidatorBuilder = defaultNodeValidatorBuilder
-  ..allowElement(
-    'button',
-    attributes: ['data-color'],
-    uriPolicy: AllowAllUri(),
-  );
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -46,10 +35,9 @@ class MyApp extends StatelessWidget {
           alt: 'A 3D model of an astronaut',
           touchAction: TouchAction.panY,
           ar: true,
-          orientation: '20deg 0 0',
+          orientation: '0 0 0',
           relatedJs: js,
           innerModelViewerHtml: html,
-          overwriteNodeValidatorBuilder: myNodeValidatorBuilder,
         ),
       ),
     );

@@ -1,7 +1,7 @@
-## 1.8.1
+## 1.9.0
 
 ### Changed
-- Update package `web: '>=0.5.0 <2.0.0'`
+- Replace `dart:html` to `package:web` for wasm support
 
 ## 1.8.0
 
