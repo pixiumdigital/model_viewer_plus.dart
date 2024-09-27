@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
-String js = r'''
+String js = '''
 const modelViewerVariants = document.querySelector("model-viewer#shoe");
 const select = document.querySelector('#variant');
 
@@ -27,26 +27,27 @@ select.addEventListener('input', (event) => {
 });
 ''';
 
-String html = r'''
-<div class="controls">
-  <div>Variant: <select id="variant"></select></div>
-</div>
+String html = '''
+  <div class="controls">
+    <div>Variant: <select id="variant"></select></div>
+  </div>
 ''';
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text("Model Viewer")),
+        appBar: AppBar(title: const Text('Model Viewer')),
         body: ModelViewer(
-          id: "shoe",
+          id: 'shoe',
           src:
-              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Models/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-          alt: "A 3D model of a Shoe",
+              'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+          alt: 'A 3D model of a Shoe',
           ar: true,
-          arModes: ['scene-viewer', 'webxr', 'quick-look'],
-          cameraControls: true,
+          arModes: const ['scene-viewer', 'webxr', 'quick-look'],
           relatedJs: js,
           innerModelViewerHtml: html,
         ),

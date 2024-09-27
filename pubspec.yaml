@@ -1,28 +1,34 @@
-# See: https://dart.dev/tools/pub/pubspec
 name: model_viewer_plus
-version: 1.2.0
-description: >-
-  A Flutter widget for rendering interactive 3D models in the glTF and GLB
-  formats.
-homepage: https://github.com/omchiii/model_viewer_plus.dart
+description: "A Flutter widget for rendering interactive 3D models in the glTF and GLB formats"
+version: 1.9.0
 repository: https://github.com/omchiii/model_viewer_plus.dart
-issue_tracker: https://github.com/omchiii/model_viewer_plus.dart/issues
+topics:
+  - model-viewer
+  - model
 platforms:
   android:
   ios:
   web:
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+  flutter: '>=3.22.0'
+
 dependencies:
+  android_intent_plus: ^5.0.2
   flutter:
     sdk: flutter
-  android_intent_plus: ^3.1.1
-  webview_flutter: ^3.0.1
-  url_launcher: ^6.1.0
+  path: ^1.9.0
+  url_launcher: ^6.3.0
+  web: ^1.0.0
+  webview_flutter: ^4.8.0
+  webview_flutter_android: ^3.16.0
+  webview_flutter_wkwebview: ^3.13.0
+
 dev_dependencies:
+  carapacik_lints: ^1.8.1
   flutter_test:
     sdk: flutter
-  pedantic: ^1.9.0
-environment:
-  sdk: '>=2.12.0 <3.0.0'
+
 flutter:
   assets:
     - assets/
