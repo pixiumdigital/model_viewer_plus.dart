@@ -1,3 +1,8 @@
+## 1.9.1
+
+### Changed
+- Update dependencies(remove `webview_flutter_android` and `webview_flutter_wkwebview`)
+
 ## 1.9.0
 
 ### Changed
